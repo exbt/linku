@@ -1,65 +1,82 @@
-import Image from "next/image";
+import { prisma } from "@/lib/db";
+import { createLink } from "./actions";
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+
+  const links = await prisma.link.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 5
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white p-4 font-sans">
+      <div className="w-full max-w-lg space-y-8">
+
+        <div className="text-center space-y-2">
+          <h1 className="text-5xl font-extrabold tracking-tighter bg-linear-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+            Linku
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+          <p className="text-gray-400">Minimalist URL Shortener</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <form action={createLink} className="flex gap-2">
+          <input 
+            name="url"
+            type="text" 
+            placeholder="Paste your long URL here..." 
+            className="flex-1 p-4 rounded-xl bg-gray-900 border border-gray-800 focus:border-blue-500 focus:outline-none transition-all placeholder:text-gray-600"
+            required
+            autoComplete="off"
+          />
+          <button 
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-xl font-bold transition-transform active:scale-95 whitespace-nowrap"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Shorten It
+          </button>
+        </form>
+
+        <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-800">
+          <h3 className="text-sm font-semibold text-gray-500 mb-4 uppercase tracking-wider">
+            Recent Links
+          </h3>
+          
+          <div className="space-y-3">
+            {links.map((link) => (
+              <div key={link.id} className="flex items-center justify-between p-3 hover:bg-gray-800/50 rounded-lg transition-colors group">
+                <div className="overflow-hidden mr-4">
+                  <a 
+                    href={`/${link.shortCode}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-mono text-lg font-medium hover:underline block"
+                  >
+                    /{link.shortCode}
+                  </a>
+                  <p className="text-gray-500 text-xs truncate">
+                    {link.originalUrl}
+                  </p>
+                </div>
+                
+                <div className="flex flex-col items-end">
+                  <span className="text-gray-400 text-xs font-mono bg-gray-800 px-2 py-1 rounded">
+                    {link.clicks} clicks
+                  </span>
+                </div>
+              </div>
+            ))}
+
+            {links.length === 0 && (
+              <div className="text-center py-6">
+                <p className="text-gray-600 text-sm">No links created yet.</p>
+              </div>
+            )}
+          </div>
         </div>
-      </main>
+
+      </div>
     </div>
   );
 }
