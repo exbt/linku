@@ -1,0 +1,34 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  }
+
+model Link {
+  id          String   @id @default(cuid())
+  originalUrl String
+  shortCode   String   @unique
+  clicks      Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  userId      String?
+  logs        Analytics[]
+  
+  @@index([shortCode])
+}
+
+model Analytics {
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+  userAgent String?
+  ip        String?
+  country   String?
+  referrer  String?
+  
+  linkId    String
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+}
