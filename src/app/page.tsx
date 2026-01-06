@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/db";
 import { createLink } from "./actions";
+import CopyButton from "@/components/CopyButton";
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-
   const links = await prisma.link.findMany({
     orderBy: { createdAt: 'desc' },
     take: 5
@@ -13,14 +13,14 @@ export default async function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white p-4 font-sans">
       <div className="w-full max-w-lg space-y-8">
-
+        
         <div className="text-center space-y-2">
           <h1 className="text-5xl font-extrabold tracking-tighter bg-linear-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
             Linku
           </h1>
           <p className="text-gray-400">Minimalist URL Shortener</p>
         </div>
-
+        
         <form action={createLink} className="flex gap-2">
           <input 
             name="url"
@@ -46,7 +46,7 @@ export default async function Home() {
           <div className="space-y-3">
             {links.map((link) => (
               <div key={link.id} className="flex items-center justify-between p-3 hover:bg-gray-800/50 rounded-lg transition-colors group">
-                <div className="overflow-hidden mr-4">
+                <div className="overflow-hidden mr-2">
                   <a 
                     href={`/${link.shortCode}`} 
                     target="_blank" 
@@ -55,15 +55,17 @@ export default async function Home() {
                   >
                     /{link.shortCode}
                   </a>
-                  <p className="text-gray-500 text-xs truncate">
+                  <p className="text-gray-500 text-xs truncate max-w-50">
                     {link.originalUrl}
                   </p>
                 </div>
                 
-                <div className="flex flex-col items-end">
-                  <span className="text-gray-400 text-xs font-mono bg-gray-800 px-2 py-1 rounded">
+                <div className="flex flex-col items-end gap-2">
+                  <span className="text-gray-400 text-[10px] font-mono bg-gray-800 px-2 py-0.5 rounded border border-gray-700">
                     {link.clicks} clicks
                   </span>
+                  
+                  <CopyButton shortCode={link.shortCode} />
                 </div>
               </div>
             ))}
