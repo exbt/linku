@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { createLink } from "./actions";
 import CopyButton from "@/components/CopyButton";
+import QrButton from "@/components/QrButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -64,8 +65,10 @@ export default async function Home() {
                   <span className="text-gray-400 text-[10px] font-mono bg-gray-800 px-2 py-0.5 rounded border border-gray-700">
                     {link.clicks} clicks
                   </span>
-                  
+                <div className="flex gap-2">
+                  <QrButton shortCode={link.shortCode} />
                   <CopyButton shortCode={link.shortCode} />
+                </div>
                 </div>
               </div>
             ))}
