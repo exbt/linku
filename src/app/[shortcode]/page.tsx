@@ -14,8 +14,15 @@ export default async function RedirectPage({ params }: PageProps) {
 
   if (!link) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-        <h1 className="text-2xl">404 - Link Not Found</h1>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-950 text-white font-sans">
+        <h1 className="text-4xl font-bold text-red-500 mb-4">404 - Not Found</h1>
+        <p className="text-gray-400">This link does not exist or has been deleted.</p>
+        <a 
+          href="/"
+          className="mt-6 px-6 py-3 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors text-white font-medium"
+        >
+          Go Home
+        </a>
       </div>
     );
   }
