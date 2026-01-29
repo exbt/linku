@@ -13,6 +13,7 @@ model Link {
   shortCode   String   @unique
   clicks      Int      @default(0)
   isActive    Boolean  @default(true)
+  title       String?
   createdAt   DateTime @default(now())
   
   userId      String?
